@@ -44,7 +44,6 @@ export async function POST(req: NextRequest) {
     }
 
     const loggInUser = await Auth.findById(user?.id).select("-password");
-
     const accessToken = signJWTAccessToken(user?.id);
     if (!accessToken) {
       return NextResponse.json(
@@ -63,12 +62,12 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json(
       {
         data: loggInUser,
-        message: "user registered successfully",
+        message: "user login successfully",
       },
       { status: 200 }
     );
 
-    response.cookies.set("token", accessToken, options);
+    response.cookies.set("accessToken", accessToken, options);
 
     return response;
   } catch (error: unknown) {

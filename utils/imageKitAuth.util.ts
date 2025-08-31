@@ -1,9 +1,6 @@
 export const authenticator = async () => {
   try {
     const response = await fetch("/api/upload-auth");
-
-    console.log("response from autenticator", response);
-
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(

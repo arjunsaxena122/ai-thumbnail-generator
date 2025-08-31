@@ -16,14 +16,41 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ISignupDetail } from "@/types/auth.type";
+import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
+  const [formData, setFormData] = useState<ISignupDetail>({
+    username: "",
+    email: "",
+    password: "",
+  });
   const [loading, setLoading] = useState(false);
-
+  const router = useRouter();
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
+    try {
+      const res = await axios.post("/api/auth/signup", formData);
+      if (res.status === 201) {
+        toast.success(res.data.message);
+        router.push("/login");
+      }
+      console.log(res);
+    } catch (error) {
+      toast.error("Error from Signup");
+      console.log("error coming from signup page", error);
+    } finally {
+      setTimeout(() => setLoading(false), 1000);
+      setFormData((prev) => ({
+        ...prev,
+        username: "",
+        email: "",
+        password: "",
+      }));
+    }
   }
 
   return (
@@ -40,14 +67,32 @@ export default function SignUp() {
           <CardContent>
             <form onSubmit={onSubmit} className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" required placeholder="Your name" />
+                <Label htmlFor="username">username</Label>
+                <Input
+                  id="username"
+                  value={formData.username}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      username: e.target.value,
+                    }))
+                  }
+                  required
+                  placeholder="johndoe007"
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      email: e.target.value,
+                    }))
+                  }
                   required
                   placeholder="you@example.com"
                 />
@@ -57,6 +102,13 @@ export default function SignUp() {
                 <Input
                   id="password"
                   type="password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
                   required
                   placeholder="••••••••"
                 />

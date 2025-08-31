@@ -16,20 +16,45 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ILoingDetail } from "@/types/auth.type";
+import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const [formData, setFormData] = useState<ILoingDetail>({
+    email: "test@gmail.com",
+    password: "1234",
+  });
   const [loading, setLoading] = useState(false);
-
+  const router = useRouter();
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    let res;
     setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
+    try {
+      res = await axios.post("/api/auth/login", formData);
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        router.push("/chat");
+      }
+    } catch (error) {
+      toast.error("error while login");
+      console.log(`error from login api from in app/login`, error);
+    } finally {
+      setTimeout(() => setLoading(false), 1000);
+      setFormData((prev) => ({
+        ...prev,
+        email: "",
+        password: "",
+      }));
+    }
   }
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
       <Header />
-      <main className="mx-auto max-w-md px-4 py-12">
+      <main className="mx-auto h-screen max-w-md px-4 py-12">
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">Log in</CardTitle>
@@ -44,6 +69,10 @@ export default function Login() {
                 <Input
                   id="email"
                   type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, email: e.target.value }))
+                  }
                   required
                   placeholder="you@example.com"
                 />
@@ -53,6 +82,13 @@ export default function Login() {
                 <Input
                   id="password"
                   type="password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
                   required
                   placeholder="••••••••"
                 />

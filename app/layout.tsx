@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
 import { ProviderTheme } from "@/components/ProviderTheme";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,10 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Suspense>
-          <ProviderTheme>{children}</ProviderTheme>
+          <ProviderTheme>
+            {children}
+            <Toaster />
+          </ProviderTheme>
         </Suspense>
       </body>
     </html>

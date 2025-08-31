@@ -16,7 +16,7 @@ export const verifiedHashedPassword = async (
 
 // Access Token
 export const signJWTAccessToken = (id: string) => {
-  return jwt.sign(id, env.ACCESS_TOKEN, {
+  return jwt.sign({ id }, env.ACCESS_TOKEN, {
     expiresIn: env.ACCESS_TOKEN_EXPIRY as jwt.SignOptions["expiresIn"],
   });
 };
@@ -43,7 +43,7 @@ export const verifyJWTAccessToken = (req: NextRequest) => {
 
 // Refresh Token
 export const signJWTRefreshToken = (id: string) => {
-  return jwt.sign(id, env.REFRESH_TOKEN, {
+  return jwt.sign({ id }, env.REFRESH_TOKEN, {
     expiresIn: env.REFRESH_TOKEN_EXPIRY as jwt.SignOptions["expiresIn"],
   });
 };

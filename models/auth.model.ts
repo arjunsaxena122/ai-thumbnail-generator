@@ -29,7 +29,7 @@ const authSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: AvailableUserEnumRoles,
-      default: UserEnumRoles.ADMIN,
+      default: UserEnumRoles.USER,
     },
     isEmailVerificationToken: {
       type: String,
