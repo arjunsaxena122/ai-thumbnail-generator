@@ -13,7 +13,7 @@ type UploadItem = {
   name?: string;
   fileType?: string;
   size?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 type Mode = "both" | "16-9" | "9-16";
@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
 
       if (response?.candidates?.[0]?.content?.parts?.length) {
         for (const part of response.candidates[0].content.parts) {
-          const p: any = part;
+          const p = part;
           if (p.text) generatedText += `${p.text}\n\n`;
           if (p.inlineData?.data)
             generatedImagesBase64.push(p.inlineData.data as string);

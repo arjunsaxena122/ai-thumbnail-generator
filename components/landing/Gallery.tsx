@@ -1,12 +1,3 @@
-const samples = [
-  "Bold text with face cutout",
-  "Minimal typographic thumbnail",
-  "Tech-focused blue layout",
-  "Creator lifestyle scene",
-  "Tutorial before/after layout",
-  "High-contrast news style",
-];
-
 const galleryImages = [
   {
     src: "/bold-text-with-face-cutout.png",

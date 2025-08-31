@@ -54,7 +54,7 @@ export default function EnhancedThumbnailStudio() {
   }
 
   // Upload single file to ImageKit
-  async function uploadToImageKit(file: File, authData: any) {
+  async function uploadToImageKit(file: File, authData?: any ) {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('fileName', file.name)
@@ -334,7 +334,7 @@ export default function EnhancedThumbnailStudio() {
                 Create Stunning Thumbnails
               </h2>
               <p className="mb-8 max-w-md text-slate-600 dark:text-slate-300">
-                Upload up to 2 images and describe your perfect thumbnail. I'll create professional YouTube (16:9) and Shorts/Reels (9:16) thumbnails optimized for maximum engagement.
+                Upload up to 2 images and describe your perfect thumbnail. I will create professional YouTube (16:9) and Shorts/Reels (9:16) thumbnails optimized for maximum engagement.
               </p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Card className="p-6 text-center">
@@ -624,7 +624,7 @@ export default function EnhancedThumbnailStudio() {
           </div>
 
           <p className="mt-2 text-xs text-slate-500 text-center">
-            ⚡ I'm a thumbnail specialist - I only create YouTube (16:9) and Shorts/Reels (9:16) thumbnails with perfect aspect ratios and engaging designs
+            ⚡ I am a thumbnail specialist - I only create YouTube (16:9) and Shorts/Reels (9:16) thumbnails with perfect aspect ratios and engaging designs
           </p>
         </div>
       </div>
