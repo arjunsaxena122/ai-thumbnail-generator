@@ -4,35 +4,38 @@ import { useRef, useState } from "react"
 import { upload } from "@imagekit/next"
 import { authenticator } from "@/utils/imageKitAuth.util"
 
-type UploadResponse = {
+export type UploadItem = {
   url?: string
   path?: string
   imageUrl?: string
   previewUrl?: string
   name?: string
   fileType?: string
-  type?: string
   size?: number
   [key: string]: any
-} | null
+}
+
+const allowedMime = ["image/jpeg", "image/png", "image/webp"] as const
 
 export function useUploadImage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [uploadResponse, setUploadResponse] = useState<UploadResponse>(null)
-  const [isUploading, setIsUploading] = useState(false)
+  const [uploadResponses, setUploadResponses] = useState<UploadItem[]>([])
+  const [activeUploads, setActiveUploads] = useState(0)
 
-  async function handleUpload() {
-    const file = fileInputRef.current?.files?.[0]
-    if (!file) return
+  const isUploading = activeUploads > 0
 
-    setIsUploading(true)
+  async function uploadSingle(file: File) {
+    if (!allowedMime.includes(file.type as any)) {
+      // eslint-disable-next-line no-console
+      console.error("[v0] Invalid file type:", file.type)
+      return null
+    }
+
+    setActiveUploads((c) => c + 1)
     try {
       const previewUrl = URL.createObjectURL(file)
-
-      // Get auth parameters from our API
       const { token, expire, signature, publicKey } = await authenticator()
 
-      // Upload to ImageKit for a public URL the server can access
       const res = await upload({
         expire,
         token,
@@ -43,27 +46,81 @@ export function useUploadImage() {
         folder: "/uploaded/images",
       })
 
-      // Ensure downstream API has mime hints
-      setUploadResponse({
+      const item: UploadItem = {
         ...res,
         previewUrl,
         name: file.name,
         fileType: file.type,
         size: file.size,
-      })
+      }
+
+      setUploadResponses((prev) => [...prev, item])
+      return item
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error("[v0] Image upload failed:", e)
-      // If upload fails, do not set a preview-only response to avoid server errors
-      setUploadResponse(null)
+      return null
     } finally {
-      setIsUploading(false)
+      setActiveUploads((c) => c - 1)
     }
   }
 
-  function clearAttachment() {
-    setUploadResponse(null)
+  async function handleUpload(filesParam?: FileList | File[]) {
+    const files = filesParam ?? (fileInputRef.current?.files ? Array.from(fileInputRef.current.files) : [])
+    if (!files || files.length === 0) return
+
+    const remaining = Math.max(0, 2 - uploadResponses.length)
+    if (remaining <= 0) return
+
+    const toUpload = Array.from(files).slice(0, remaining)
+    for (const f of toUpload) {
+      // eslint-disable-next-line no-await-in-loop
+      await uploadSingle(f)
+    }
+
     if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
-  return { fileInputRef, handleUpload, uploadResponse, isUploading, clearAttachment }
+  function removeAttachment(index: number) {
+    setUploadResponses((prev) => {
+      const item = prev[index]
+      if (item?.previewUrl && item.previewUrl.startsWith("blob:")) {
+        try {
+          URL.revokeObjectURL(item.previewUrl)
+        } catch {
+          // ignore
+        }
+      }
+      return prev.filter((_, i) => i !== index)
+    })
+    if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  function clearAttachment() {
+    setUploadResponses((prev) => {
+      for (const it of prev) {
+        if (it?.previewUrl && it.previewUrl.startsWith("blob:")) {
+          try {
+            URL.revokeObjectURL(it.previewUrl)
+          } catch {
+            // ignore
+          }
+        }
+      }
+      return []
+    })
+    if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  const hasAnyNetworkUrl = uploadResponses.some((u) => Boolean(u?.url) || Boolean(u?.path) || Boolean(u?.imageUrl))
+
+  return {
+    fileInputRef,
+    handleUpload,
+    uploadResponses,
+    hasAnyNetworkUrl,
+    isUploading,
+    clearAttachment,
+    removeAttachment,
+  }
 }

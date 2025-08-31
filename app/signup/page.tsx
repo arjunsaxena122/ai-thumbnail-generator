@@ -56,7 +56,7 @@ export default function SignUp() {
   return (
     <div className="min-h-dvh bg-background text-foreground">
       <Header />
-      <main className="mx-auto max-w-md px-4 py-12">
+      <main className="mx-auto h-screen max-w-md px-4 py-12">
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">Create your account</CardTitle>
