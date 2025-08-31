@@ -9,6 +9,10 @@ const envSchema = z.object({
   ACCESS_TOKEN_EXPIRY: z.string(),
   REFRESH_TOKEN: z.string(),
   REFRESH_TOKEN_EXPIRY: z.string(),
+  GEMINI_API_KEY: z.string(),
+  IMAGEKIT_PRIVATE_KEY: z.string(),
+  IMAGEKIT_PUBLIC_KEY: z.string(),
+  IMAGEKIT_URL_ENDPOINT: z.string(),
 });
 
 const createEnv = (env: NodeJS.ProcessEnv) => {

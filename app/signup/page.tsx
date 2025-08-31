@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function SignUpPage() {
+export default function SignUp() {
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {

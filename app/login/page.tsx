@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function LoginPage() {
+export default function Login() {
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
